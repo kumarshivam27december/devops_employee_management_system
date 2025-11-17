@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from '../api'
 import ConfirmModal from './ConfirmModal'
 import Notification from './Notification'
+import '../dashboard-styles.css'
 
 export default function Dashboard({ user, token }) {
   const [employees, setEmployees] = useState([])
@@ -61,60 +62,135 @@ export default function Dashboard({ user, token }) {
 
   const filtered = employees.filter(e => e.name.toLowerCase().includes(query.toLowerCase()) || (e.position || '').toLowerCase().includes(query.toLowerCase()) )
 
+  const stats = {
+    total: employees.length,
+    active: filtered.length,
+    departments: new Set(employees.map(e => e.department || 'Unassigned')).size,
+    avgSalary: employees.length > 0 ? Math.round(employees.reduce((sum, e) => sum + (parseInt(e.salary) || 0), 0) / employees.length) : 0
+  }
+
   return (
-    <div className="dashboard">
+    <div className="dashboard-modern">
       <Notification message={notif.message} type={notif.type} onClose={()=>setNotif({message:'',type:'info'})} />
       <ConfirmModal open={confirm.open} title="Delete Employee" message="Are you sure you want to delete this employee?" onConfirm={doDelete} onCancel={()=>setConfirm({open:false,id:null})} />
 
-      <div className="dash-header">
-        <h2>Welcome, {user.name}</h2>
-        <div className="search">
-          <input placeholder="Search by name or position..." value={query} onChange={e=>setQuery(e.target.value)} />
-          <button onClick={()=>{setQuery('')}} className="btn">Clear</button>
+      <div className="dash-hero">
+        <div className="dash-hero-content">
+          <h1>📊 Dashboard</h1>
+          <p>Manage your team efficiently and effectively</p>
         </div>
       </div>
 
-      <section className="emp-form card">
-        <h3>{editId ? 'Edit Employee' : 'Add Employee'}</h3>
-        <form onSubmit={submit} className="form-grid">
-          <input placeholder="Name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} />
-          <input placeholder="Position" value={form.position} onChange={e=>setForm({...form,position:e.target.value})} />
-          <input placeholder="Department" value={form.department} onChange={e=>setForm({...form,department:e.target.value})} />
-          <input placeholder="Salary" type="number" value={form.salary} onChange={e=>setForm({...form,salary:e.target.value})} />
-          <div className="form-actions">
-            <button type="submit" className="btn btn-primary">{loading ? 'Saving...' : (editId ? 'Update' : 'Add')}</button>
-            {editId && <button type="button" className="btn btn-secondary" onClick={()=>{setEditId(null); setForm({name:'',position:'',department:'',salary:''})}}>Cancel</button>}
+      <div className="dash-container">
+        <div className="dash-header-modern">
+          <div className="welcome-card">
+            <div className="welcome-icon">👋</div>
+            <div>
+              <h2>Welcome back, {user.name}!</h2>
+              <p>You have <strong>{filtered.length}</strong> active employee records</p>
+            </div>
           </div>
-        </form>
-      </section>
+          <div className="search-modern">
+            <input placeholder="🔍 Search by name or position..." value={query} onChange={e=>setQuery(e.target.value)} />
+            {query && <button onClick={()=>{setQuery('')}} className="btn btn-sm">✕ Clear</button>}
+          </div>
+        </div>
 
-      <section className="emp-list card">
-        <h3>Employees ({filtered.length})</h3>
-        {loading ? <div className="muted">Loading...</div> : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Name</th><th>Position</th><th>Dept</th><th>Salary</th><th>Actions</th></tr>
-              </thead>
-              <tbody>
-                {filtered.map(e => (
-                  <tr key={e._id}>
-                    <td>{e.name}</td>
-                    <td>{e.position}</td>
-                    <td>{e.department}</td>
-                    <td>{e.salary}</td>
-                    <td className="actions">
-                      <button className="btn btn-sm" onClick={()=>startEdit(e)}>Edit</button>
-                      <button className="btn btn-sm btn-danger" onClick={()=>confirmDelete(e._id)}>Delete</button>
-                    </td>
-                  </tr>
-                ))}
-                {filtered.length === 0 && <tr><td colSpan={5} className="muted">No employees found.</td></tr>}
-              </tbody>
-            </table>
+        <div className="dash-stats">
+          <div className="stat-card">
+            <div className="stat-icon">👥</div>
+            <div className="stat-content">
+              <p className="stat-label">Total Employees</p>
+              <p className="stat-value">{stats.total}</p>
+            </div>
           </div>
-        )}
-      </section>
+          <div className="stat-card">
+            <div className="stat-icon">📋</div>
+            <div className="stat-content">
+              <p className="stat-label">Active Records</p>
+              <p className="stat-value">{stats.active}</p>
+            </div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-icon">🏢</div>
+            <div className="stat-content">
+              <p className="stat-label">Departments</p>
+              <p className="stat-value">{stats.departments}</p>
+            </div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-icon">💰</div>
+            <div className="stat-content">
+              <p className="stat-label">Avg Salary</p>
+              <p className="stat-value">₹{stats.avgSalary.toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+
+        <section className="emp-form-modern">
+          <div className="form-header">
+            <h3>{editId ? '✏️ Edit Employee' : '➕ Add New Employee'}</h3>
+            <p>{editId ? 'Update employee information' : 'Add a new team member to your organization'}</p>
+          </div>
+          <form onSubmit={submit} className="form-grid-modern">
+            <input className="form-input" placeholder="Full Name *" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} required />
+            <input className="form-input" placeholder="Position" value={form.position} onChange={e=>setForm({...form,position:e.target.value})} />
+            <input className="form-input" placeholder="Department" value={form.department} onChange={e=>setForm({...form,department:e.target.value})} />
+            <input className="form-input" placeholder="Salary" type="number" value={form.salary} onChange={e=>setForm({...form,salary:e.target.value})} />
+            <div className="form-actions-modern">
+              <button type="submit" className="btn btn-primary btn-lg">{loading ? '⏳ Saving...' : (editId ? '💾 Update Employee' : '➕ Add Employee')}</button>
+              {editId && <button type="button" className="btn btn-secondary btn-lg" onClick={()=>{setEditId(null); setForm({name:'',position:'',department:'',salary:''})}}>❌ Cancel</button>}
+            </div>
+          </form>
+        </section>
+
+        <section className="emp-list-modern">
+          <div className="list-header">
+            <h3>👥 Employee Directory</h3>
+            <span className="emp-count">{filtered.length} of {employees.length} employees</span>
+          </div>
+          {loading ? (
+            <div className="loading-state">
+              <div className="spinner"></div>
+              <p>Loading employees...</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">📭</div>
+              <p>No employees found</p>
+              <small>Add your first employee to get started</small>
+            </div>
+          ) : (
+            <div className="table-wrap-modern">
+              <table className="modern-table">
+                <thead>
+                  <tr>
+                    <th>👤 Name</th>
+                    <th>💼 Position</th>
+                    <th>🏢 Department</th>
+                    <th>💰 Salary</th>
+                    <th>⚙️ Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(e => (
+                    <tr key={e._id} className="table-row">
+                      <td className="name-cell">{e.name}</td>
+                      <td>{e.position || '—'}</td>
+                      <td><span className="dept-badge">{e.department || 'Unassigned'}</span></td>
+                      <td className="salary-cell">{e.salary ? `₹${parseInt(e.salary).toLocaleString()}` : '—'}</td>
+                      <td className="actions-cell">
+                        <button className="btn btn-sm btn-edit" onClick={()=>startEdit(e)}>✏️ Edit</button>
+                        <button className="btn btn-sm btn-delete" onClick={()=>confirmDelete(e._id)}>🗑️ Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   )
 }
