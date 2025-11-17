@@ -1,15 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 export default function Header({ user, onLogout }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <header className="site-header card">
       <div className="brand">
         <Link to="/" className="logo">CloudOps360</Link>
         <nav className="nav">
+          <Link to="/">Home</Link>
+          <Link to="/services">Services</Link>
           <Link to="/about">About</Link>
+          <Link to="/documentation">Docs</Link>
+          <Link to="/blog">Blog</Link>
+          <Link to="/gallery">Gallery</Link>
           <Link to="/contact">Contact</Link>
-          <Link to="/dashboard">Dashboard</Link>
+          {user && <Link to="/dashboard">Dashboard</Link>}
         </nav>
       </div>
       <div className="header-actions">
