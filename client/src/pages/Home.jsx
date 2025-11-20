@@ -21,7 +21,7 @@ export default function Home(){
       <section className="hero card">
         <div className="hero-inner">
           <div className="hero-text">
-            <h2>CloudOps360 — Enterprise Management Project</h2>
+            <h2>CloudOps360 — Enterprise Management </h2>
             <p>A modern MERN application with automation-ready pipelines. Manage employees, deploy with confidence, and monitor with ease.</p>
             <a className="btn btn-primary" href="/dashboard">Go to Dashboard</a>
           </div>
