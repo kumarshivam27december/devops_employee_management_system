@@ -1,5 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 async function handleResponse(res) {
   let parsed = null
   try { parsed = await res.json() } catch (e) { parsed = null }
